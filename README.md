@@ -34,21 +34,43 @@ it is exact at every size and it works in every application.
 
 ## Install
 
-1. Clone this repository:
+Download an archive from the
+[latest release](https://github.com/ralgozino/snug-mono/releases/latest):
 
-   ```sh
-   git clone https://github.com/ralgozino/snug-mono.git
-   ```
+| Archive | Family name | Contents |
+|---|---|---|
+| `SnugMono.zip` | `Snug Mono` | 2 variable fonts, weight 200 to 800, roman and italic |
+| `SnugMono-NerdFont.zip` | `SnugMono Nerd Font Mono` | 4 static fonts with the Nerd Fonts icons |
 
-2. Run the install script:
+These two links always point to the current version:
 
-   ```sh
-   cd snug-mono && ./install.sh
-   ```
+- `https://github.com/ralgozino/snug-mono/releases/latest/download/SnugMono.zip`
+- `https://github.com/ralgozino/snug-mono/releases/latest/download/SnugMono-NerdFont.zip`
 
-3. Set the font of your terminal or your editor to `Snug Mono`.
+Unzip the archive. On macOS, copy the `.ttf` files to `~/Library/Fonts`. On
+Linux, copy them to `~/.local/share/fonts` and then run `fc-cache -f`. Then set
+the font of your terminal or your editor.
 
-The script copies the fonts to `~/Library/Fonts` on macOS, or to
+On macOS, this command installs both families:
+
+```sh
+cd "$(mktemp -d)" && for a in SnugMono SnugMono-NerdFont; do
+  curl -sLO "https://github.com/ralgozino/snug-mono/releases/latest/download/$a.zip"
+  unzip -qo "$a.zip"
+done && cp ./*.ttf ~/Library/Fonts/
+```
+
+### Install from the repository
+
+The repository also holds the build scripts. To use them, clone it and run the
+install script:
+
+```sh
+git clone https://github.com/ralgozino/snug-mono.git
+cd snug-mono && ./install.sh
+```
+
+The script copies both families to `~/Library/Fonts` on macOS, or to
 `~/.local/share/fonts` on Linux.
 
 ## Configure your terminal

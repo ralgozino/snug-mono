@@ -27,14 +27,44 @@ jobs:
       - run: python3 build-nerd.py
 
       - name: Commit when the fonts changed
+        id: commit
         run: |
           # --porcelain, not diff: new files under fonts/nerd are untracked
           if [ -z "$(git status --porcelain -- fonts UPSTREAM)" ]; then
             echo "Upstream is unchanged. Nothing to do."
             exit 0
           fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add fonts UPSTREAM
           git commit -m "Rebuild from $(head -1 UPSTREAM)"
           git push
+
+      # A release gives a stable download URL, so nobody has to clone the repo.
+      - name: Publish a release
+        if: steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(head -1 UPSTREAM | sed 's/.*Version //')
+          tag="v${version}.$(date -u +%Y%m%d)"
+
+          mkdir -p dist
+          zip -qj dist/SnugMono.zip          fonts/SnugMono*.ttf OFL.txt README.md
+          zip -qj dist/SnugMono-NerdFont.zip fonts/nerd/*.ttf    OFL.txt README.md
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/*.zip --clobber
+          else
+            gh release create "$tag" dist/*.zip \
+              --title "Snug Mono $tag" \
+              --notes "Built from Atkinson Hyperlegible Mono Version ${version}.
+
+          | Download | Family name | Contents |
+          |---|---|---|
+          | \`SnugMono.zip\` | \`Snug Mono\` | 2 variable fonts, weight 200-800, roman and italic |
+          | \`SnugMono-NerdFont.zip\` | \`SnugMono Nerd Font Mono\` | 4 static fonts with the Nerd Fonts icons |
+
+          To install, unzip the archive. On macOS, copy the \`.ttf\` files to \`~/Library/Fonts\`. On Linux, copy them to \`~/.local/share/fonts\` and then run \`fc-cache -f\`."
+          fi
