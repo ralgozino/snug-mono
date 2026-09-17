@@ -48,7 +48,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           version=$(head -1 UPSTREAM | sed 's/.*Version //')
-          tag="v${version}.$(date -u +%Y%m%d)"
+          # The short SHA is part of the tag on purpose. Without it, a change to
+          # the build on the same day keeps the old version, and Homebrew then
+          # reports that the newest version is already installed.
+          tag="v${version}.$(date -u +%Y%m%d).$(git rev-parse --short HEAD)"
 
           mkdir -p dist
           zip -qj dist/SnugMono.zip          fonts/SnugMono*.ttf OFL.txt README.md
