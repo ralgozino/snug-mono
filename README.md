@@ -97,7 +97,7 @@ the original, so both can be installed at the same time.
 The `fonts/nerd/` directory holds a variant with the
 [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) icons added. Use it when
 your prompt or your file manager shows icons. The family name is
-`SnugMono Nerd Font`.
+`SnugMono Nerd Font Mono`.
 
 The variant has four static styles: Regular, Bold, Italic and Bold Italic. They
 are static because the Nerd Fonts patcher cannot read a variable font. The
@@ -106,7 +106,7 @@ ExtraLight. The build script therefore makes a static instance at each weight
 first, and then patches it.
 
 The install script copies both families. Set your terminal to `Snug Mono` for
-the plain font, or to `SnugMono Nerd Font` for the one with icons.
+the plain font, or to `SnugMono Nerd Font Mono` for the one with icons.
 
 To build this variant yourself, you also need FontForge:
 

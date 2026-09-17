@@ -16,4 +16,4 @@ cp fonts/SnugMono*.ttf "$dir"
 
 echo "Installed Snug Mono in $dir"
 echo "Set your terminal or editor font to: Snug Mono"
-[ -d fonts/nerd ] && echo "For icons, use instead:            SnugMono Nerd Font"
+[ -d fonts/nerd ] && echo "For icons, use instead:            SnugMono Nerd Font Mono"
