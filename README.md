@@ -38,8 +38,9 @@ it is exact at every size and it works in every application.
 
 ```sh
 brew tap ralgozino/snug-mono https://github.com/ralgozino/snug-mono
-brew install --cask font-snug-mono             # the plain font
-brew install --cask font-snug-mono-nerd-font   # the font with icons
+brew install --cask font-snug-mono                  # the plain font
+brew install --cask font-snug-mono-nerd-font        # icons at their natural width
+brew install --cask font-snug-mono-nerd-font-mono   # each icon in one cell
 ```
 
 The tap command is necessary one time only. After that, `brew upgrade` keeps
@@ -53,12 +54,14 @@ Download an archive from the
 | Archive | Family name | Contents |
 |---|---|---|
 | `SnugMono.zip` | `Snug Mono` | 2 variable fonts, weight 200 to 800, roman and italic |
-| `SnugMono-NerdFont.zip` | `SnugMono Nerd Font Mono` | 4 static fonts with the Nerd Fonts icons |
+| `SnugMono-NerdFont.zip` | `SnugMono Nerd Font` | 4 static fonts, icons at their natural width |
+| `SnugMono-NerdFontMono.zip` | `SnugMono Nerd Font Mono` | 4 static fonts, each icon in one cell |
 
 These two links always point to the current version:
 
 - `https://github.com/ralgozino/snug-mono/releases/latest/download/SnugMono.zip`
 - `https://github.com/ralgozino/snug-mono/releases/latest/download/SnugMono-NerdFont.zip`
+- `https://github.com/ralgozino/snug-mono/releases/latest/download/SnugMono-NerdFontMono.zip`
 
 Unzip the archive. On macOS, copy the `.ttf` files to `~/Library/Fonts`. On
 Linux, copy them to `~/.local/share/fonts` and then run `fc-cache -f`. Then set
@@ -134,14 +137,23 @@ The `fonts/nerd/` directory holds a variant with the
 your prompt or your file manager shows icons. The family name is
 `SnugMono Nerd Font Mono`.
 
-The variant has four static styles: Regular, Bold, Italic and Bold Italic. They
-are static because the Nerd Fonts patcher cannot read a variable font. The
-patcher takes the default instance, and for Snug Mono that instance is
-ExtraLight. The build script therefore makes a static instance at each weight
-first, and then patches it.
+There are two variants, each with four static styles:
 
-The install script copies both families. Set your terminal to `Snug Mono` for
-the plain font, or to `SnugMono Nerd Font Mono` for the one with icons.
+- `SnugMono Nerd Font` keeps the natural width of each icon. The icons are
+  larger, and a wide icon takes two cells.
+- `SnugMono Nerd Font Mono` puts every icon in one cell. The icons are smaller,
+  and the columns always align.
+
+Use the standard variant in an editor such as VS Code or Zed. Use the Mono
+variant in a terminal that needs strict column alignment.
+
+Ghostty needs neither. It carries Symbols Nerd Font and uses it for any icon
+that the main font does not have. With Ghostty, set the font to `Snug Mono`.
+
+The variants are static because the Nerd Fonts patcher cannot read a variable
+font. The patcher takes the default instance, and for Snug Mono that instance
+is ExtraLight. The build script therefore makes a static instance at each
+weight first, and then patches it.
 
 To build this variant yourself, you also need FontForge:
 

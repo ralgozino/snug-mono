@@ -52,7 +52,8 @@ jobs:
 
           mkdir -p dist
           zip -qj dist/SnugMono.zip          fonts/SnugMono*.ttf OFL.txt README.md
-          zip -qj dist/SnugMono-NerdFont.zip fonts/nerd/*.ttf    OFL.txt README.md
+          zip -qj dist/SnugMono-NerdFont.zip     fonts/nerd/SnugMonoNerdFont-*.ttf     OFL.txt README.md
+          zip -qj dist/SnugMono-NerdFontMono.zip fonts/nerd/SnugMonoNerdFontMono-*.ttf OFL.txt README.md
 
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" dist/*.zip --clobber
@@ -64,13 +65,14 @@ jobs:
           | Download | Family name | Contents |
           |---|---|---|
           | \`SnugMono.zip\` | \`Snug Mono\` | 2 variable fonts, weight 200-800, roman and italic |
-          | \`SnugMono-NerdFont.zip\` | \`SnugMono Nerd Font Mono\` | 4 static fonts with the Nerd Fonts icons |
+          | \`SnugMono-NerdFont.zip\` | \`SnugMono Nerd Font\` | 4 static fonts, icons at their natural width |
+          | \`SnugMono-NerdFontMono.zip\` | \`SnugMono Nerd Font Mono\` | 4 static fonts, each icon in one cell |
 
           To install, unzip the archive. On macOS, copy the \`.ttf\` files to \`~/Library/Fonts\`. On Linux, copy them to \`~/.local/share/fonts\` and then run \`fc-cache -f\`."
           fi
 
           # Point the Homebrew casks at the release that this run just made.
-          for pair in "font-snug-mono:SnugMono" "font-snug-mono-nerd-font:SnugMono-NerdFont"; do
+          for pair in "font-snug-mono:SnugMono" "font-snug-mono-nerd-font:SnugMono-NerdFont" "font-snug-mono-nerd-font-mono:SnugMono-NerdFontMono"; do
             cask="${pair%%:*}"; archive="${pair##*:}"
             sum=$(sha256sum "dist/${archive}.zip" | cut -d" " -f1)
             sed -i -E "s|^  version \".*\"|  version \"${tag#v}\"|; \
