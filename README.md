@@ -92,6 +92,33 @@ new cell. It moves the marks by the same amount, so accents stay above their
 base letters. It then writes a new family name. The new name keeps the font separate from
 the original, so both can be installed at the same time.
 
+## Nerd Font variant
+
+The `fonts/nerd/` directory holds a variant with the
+[Nerd Fonts](https://github.com/ryanoasis/nerd-fonts) icons added. Use it when
+your prompt or your file manager shows icons. The family name is
+`SnugMono Nerd Font`.
+
+The variant has four static styles: Regular, Bold, Italic and Bold Italic. They
+are static because the Nerd Fonts patcher cannot read a variable font. The
+patcher takes the default instance, and for Snug Mono that instance is
+ExtraLight. The build script therefore makes a static instance at each weight
+first, and then patches it.
+
+The install script copies both families. Set your terminal to `Snug Mono` for
+the plain font, or to `SnugMono Nerd Font` for the one with icons.
+
+To build this variant yourself, you also need FontForge:
+
+```sh
+brew install fontforge        # macOS
+sudo apt install fontforge    # Debian and Ubuntu
+python3 build-nerd.py
+```
+
+The script downloads the Nerd Fonts patcher, version 3.5.1. It compares the
+file against a known SHA-256 checksum before it runs the file.
+
 ## Update
 
 The build script always downloads the current source font. To update, run the

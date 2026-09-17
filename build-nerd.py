@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+"""Build the Nerd Font variants of Snug Mono.
+
+The Nerd Fonts patcher cannot read a variable font. It uses the default
+instance, which for this font is ExtraLight. This script first makes static
+instances at the usual four styles, then patches each one.
+
+The script needs FontForge with the Python module, and it needs network access
+for the patcher. Run build.py first.
+
+Usage:  python3 build-nerd.py
+"""
+import hashlib
+import shutil
+import subprocess
+import sys
+import urllib.request
+import zipfile
+from pathlib import Path
+
+from fontTools.ttLib import TTFont
+from fontTools.varLib.instancer import instantiateVariableFont
+
+PATCHER_VERSION = "v3.5.1"
+PATCHER_URL = (f"https://github.com/ryanoasis/nerd-fonts/releases/download/"
+               f"{PATCHER_VERSION}/FontPatcher.zip")
+PATCHER_SHA256 = "42bcb32145499a35732274c7fc48deb434ad0d2e0e118f98527c1479c6fa251a"
+
+# style name -> (source file, weight)
+STYLES = {
+    "Regular": ("SnugMono[wght].ttf", 400),
+    "Bold": ("SnugMono[wght].ttf", 700),
+    "Italic": ("SnugMono-Italic[wght].ttf", 400),
+    "BoldItalic": ("SnugMono-Italic[wght].ttf", 700),
+}
+
+ROOT = Path(__file__).parent
+FONTS = ROOT / "fonts"
+OUT = FONTS / "nerd"
+WORK = ROOT / "build"
+
+
+def get_patcher():
+    """Download the patcher and make sure that the file is the expected one."""
+    WORK.mkdir(exist_ok=True)
+    archive = WORK / "FontPatcher.zip"
+    if not archive.exists():
+        print(f"  download FontPatcher {PATCHER_VERSION}")
+        urllib.request.urlretrieve(PATCHER_URL, archive)
+
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    if digest != PATCHER_SHA256:
+        sys.exit(f"FontPatcher.zip has checksum {digest}, expected {PATCHER_SHA256}")
+
+    target = WORK / "patcher"
+    if not (target / "font-patcher").exists():
+        with zipfile.ZipFile(archive) as z:
+            z.extractall(target)
+    return target
+
+
+def make_static(style, source, weight):
+    """Write a static instance of the variable font at one weight."""
+    font = TTFont(FONTS / source)
+    instantiateVariableFont(font, {"wght": weight}, inplace=True, updateFontNames=True)
+    path = WORK / f"SnugMono-{style}.ttf"
+    font.save(path)
+    return path
+
+
+def main():
+    if not shutil.which("fontforge"):
+        sys.exit("fontforge is not installed. See the README for how to install it.")
+
+    patcher = get_patcher()
+    if OUT.exists():
+        shutil.rmtree(OUT)
+    OUT.mkdir(parents=True)
+
+    for style, (source, weight) in STYLES.items():
+        static = make_static(style, source, weight)
+        print(f"  patch {static.name}")
+        subprocess.run(
+            ["fontforge", "-script", str(patcher / "font-patcher"), str(static),
+             "--complete",          # every glyph set
+             "--mono",              # icons take one cell, which is what a terminal needs
+             "--careful",           # never replace a glyph the font already has
+             "--quiet",
+             "--outputdir", str(OUT)],
+            cwd=patcher, check=True,
+            stdout=subprocess.DEVNULL, stderr=None)
+
+    built = sorted(OUT.glob("*.ttf"))
+    if len(built) != len(STYLES):
+        sys.exit(f"Expected {len(STYLES)} fonts, got {len(built)}")
+
+    for path in built:
+        font = TTFont(path)
+        family = font["name"].getDebugName(16) or font["name"].getDebugName(1)
+        cell = max(a for a, _ in font["hmtx"].metrics.values())
+        count = len(font.getGlyphOrder())
+        print(f"  {path.name}  family={family!r} cell={cell} glyphs={count}")
+        assert "Nerd Font" in family, "the patcher did not rename the family"
+        assert cell == 575, f"the cell changed to {cell}"
+        assert count > 3000, "the icon glyphs are missing"
+    print("OK")
+
+
+if __name__ == "__main__":
+    main()

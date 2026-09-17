@@ -11,7 +11,9 @@ esac
 
 mkdir -p "$dir"
 cp fonts/SnugMono*.ttf "$dir"
+[ -d fonts/nerd ] && cp fonts/nerd/*.ttf "$dir"
 [ "$(uname -s)" = Linux ] && command -v fc-cache >/dev/null && fc-cache -f "$dir"
 
 echo "Installed Snug Mono in $dir"
 echo "Set your terminal or editor font to: Snug Mono"
+[ -d fonts/nerd ] && echo "For icons, use instead:            SnugMono Nerd Font"
