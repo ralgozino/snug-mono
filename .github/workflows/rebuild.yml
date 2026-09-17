@@ -68,3 +68,19 @@ jobs:
 
           To install, unzip the archive. On macOS, copy the \`.ttf\` files to \`~/Library/Fonts\`. On Linux, copy them to \`~/.local/share/fonts\` and then run \`fc-cache -f\`."
           fi
+
+          # Point the Homebrew casks at the release that this run just made.
+          for pair in "font-snug-mono:SnugMono" "font-snug-mono-nerd-font:SnugMono-NerdFont"; do
+            cask="${pair%%:*}"; archive="${pair##*:}"
+            sum=$(sha256sum "dist/${archive}.zip" | cut -d" " -f1)
+            sed -i -E "s|^  version \".*\"|  version \"${tag#v}\"|; \
+                       s|^  sha256 \".*\"|  sha256 \"${sum}\"|" "Casks/${cask}.rb"
+          done
+
+          if [ -n "$(git status --porcelain -- Casks)" ]; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add Casks
+            git commit -m "chore: point the casks at ${tag}"
+            git push
+          fi

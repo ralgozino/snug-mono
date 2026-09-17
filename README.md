@@ -34,6 +34,19 @@ it is exact at every size and it works in every application.
 
 ## Install
 
+### With Homebrew
+
+```sh
+brew tap ralgozino/snug-mono https://github.com/ralgozino/snug-mono
+brew install --cask font-snug-mono             # the plain font
+brew install --cask font-snug-mono-nerd-font   # the font with icons
+```
+
+The tap command is necessary one time only. After that, `brew upgrade` keeps
+the fonts current.
+
+### By download
+
 Download an archive from the
 [latest release](https://github.com/ralgozino/snug-mono/releases/latest):
 
