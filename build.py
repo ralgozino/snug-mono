@@ -89,7 +89,9 @@ def main():
     OUT.mkdir(exist_ok=True)
     version = None
     for src, dst in SOURCES.items():
-        font = TTFont(download(src))
+        # recalcTimestamp=False keeps upstream's date, so two builds of the
+        # same source give identical bytes and CI does not churn commits.
+        font = TTFont(download(src), recalcTimestamp=False)
         version = font["name"].getDebugName(5)
         old, new, shift = tighten(font, factor)
         rename(font)

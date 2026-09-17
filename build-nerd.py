@@ -61,7 +61,7 @@ def get_patcher():
 
 def make_static(style, source, weight):
     """Write a static instance of the variable font at one weight."""
-    font = TTFont(FONTS / source)
+    font = TTFont(FONTS / source, recalcTimestamp=False)
     instantiateVariableFont(font, {"wght": weight}, inplace=True, updateFontNames=True)
     path = WORK / f"SnugMono-{style}.ttf"
     font.save(path)
@@ -89,6 +89,15 @@ def main():
              "--outputdir", str(OUT)],
             cwd=patcher, check=True,
             stdout=subprocess.DEVNULL, stderr=None)
+
+    # FontForge stamps its own build date. Copy the source date over it so
+    # that two builds of the same source give identical bytes.
+    reference = TTFont(FONTS / "SnugMono[wght].ttf", recalcTimestamp=False)["head"]
+    for path in OUT.glob("*.ttf"):
+        font = TTFont(path, recalcTimestamp=False)
+        font["head"].modified = reference.modified
+        font["head"].created = reference.created
+        font.save(path)
 
     built = sorted(OUT.glob("*.ttf"))
     if len(built) != len(STYLES):
