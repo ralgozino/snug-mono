@@ -1,6 +1,6 @@
 cask "font-snug-mono" do
-  version "2.001.20260917.4e21edf"
-  sha256 "a9d254045eb1340b20d680b83ceda500227ea01c658583966baf889eab65a6ad"
+  version "2.001.20260925.8367e61"
+  sha256 "abbab6d669ede454fa0fc62fdaba7c6a2fe442c1c967633f37b81dcf605f23b8"
 
   url "https://github.com/ralgozino/snug-mono/releases/download/v#{version}/SnugMono.zip"
   name "Snug Mono"
