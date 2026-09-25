@@ -182,6 +182,28 @@ the action commits the new fonts to this repository. Then you only pull and run
 The file [UPSTREAM](UPSTREAM) records the version of the source font that the
 current fonts come from.
 
+## Symbols
+
+The source font has no geometric shapes and no arrows. A terminal takes a
+missing glyph from a fallback font, at the size of that font. Next to the
+short cap height of Snug Mono, those glyphs look too large.
+
+The build adds these symbols, drawn to the metrics of Snug Mono:
+
+| Symbol | Size |
+|---|---|
+| `●` `○` `◐` | As tall as the lowercase, on the middle of the bullet |
+| `◦` | The size of `•`, so the two are a pair |
+| `▲` `▼` | As wide as `●` is tall, on the middle of the minus sign |
+| `↑` `↓` | From the baseline to the cap height |
+| `❯` | As tall as the lowercase, heavier than `>` |
+| `✕` | The same as `×` |
+
+The outlines, the arrows and `❯` follow the weight of the letters. A filled
+shape stays the same at every weight. The code is in
+[symbols.py](symbols.py). A symbol that the source font gets in a later
+release is not replaced.
+
 ## The hyphen still has space around it
 
 This is correct, and Snug Mono does not change it. The hyphen of the source font

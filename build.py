@@ -14,6 +14,8 @@ from pathlib import Path
 
 from fontTools.ttLib import TTFont
 
+import symbols
+
 UPSTREAM = ("https://raw.githubusercontent.com/googlefonts/"
             "atkinson-hyperlegible-next-mono/main/fonts/variable/")
 SOURCES = {
@@ -94,6 +96,8 @@ def main():
         font = TTFont(download(src), recalcTimestamp=False)
         version = font["name"].getDebugName(5)
         old, new, shift = tighten(font, factor)
+        assert new == symbols.CELL, f"the symbols are drawn for a cell of {symbols.CELL}, not {new}"
+        added = symbols.add_symbols(font)
         rename(font)
         font.save(OUT / dst)
 
@@ -105,6 +109,7 @@ def main():
         print(f"    cell {old} -> {new} ({factor:.0%}), outlines moved {shift}")
         print(f"    cap height / cell = {cap / new:.3f}")
         print(f"    largest overhang  = {worst / upem:+.1%} em")
+        print(f"    symbols added     = {''.join(added)}")
         assert 0.9 < cap / new < 1.3, "cap/cell ratio is out of the usual range"
         assert worst / upem > -0.12, "a glyph sticks out too far"
 
