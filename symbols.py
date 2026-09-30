@@ -96,6 +96,33 @@ def chevron(pen, s):
                   (left + t, AXIS - h), (left, AXIS - h), (tip - t, AXIS)])
 
 
+def check(pen, s):
+    """✓, a short arm and a long arm, a little heavier than a stem. The inner
+    corner is mitred and the outer one is cut, so the bottom stays above the
+    baseline."""
+    t = s * 1.1
+    h = t / 2
+    a, b, c = (70, 330), (215, 110), (505, 560)
+
+    def unit(p, q):
+        dx, dy = q[0] - p[0], q[1] - p[1]
+        n = math.hypot(dx, dy)
+        return dx / n, dy / n
+
+    u1, u2 = unit(a, b), unit(b, c)
+    n1, n2 = (-u1[1], u1[0]), (-u2[1], u2[0])  # the left side of each arm
+
+    def off(p, n, k):
+        return (p[0] + n[0] * k, p[1] + n[1] * k)
+
+    # The inner corner is where the left edges of the two arms meet.
+    p1, p2 = off(a, n1, h), off(b, n2, h)
+    k = ((p2[0] - p1[0]) * u2[1] - (p2[1] - p1[1]) * u2[0]) / (u1[0] * u2[1] - u1[1] * u2[0])
+    inner = (p1[0] + u1[0] * k, p1[1] + u1[1] * k)
+    polygon(pen, [p1, inner, off(c, n2, h), off(c, n2, -h),
+                  off(b, n2, -h), off(b, n1, -h), off(a, n1, -h)])
+
+
 def triangle(pen, up):
     w, h = 500, 434  # equilateral, and as wide as ● is tall
     if up:
@@ -117,6 +144,7 @@ SYMBOLS = {
     0x2191: ("arrowup", lambda p, s: arrow(p, s, up=True)),                      # ↑
     0x2193: ("arrowdown", lambda p, s: arrow(p, s, up=False)),                   # ↓
     0x276F: ("uni276F", lambda p, s: chevron(p, s)),                             # ❯
+    0x2713: ("uni2713", lambda p, s: check(p, s)),                               # ✓
 }
 # ✕ is the multiplication sign of the font, which already follows the weight.
 COMPOSITES = {0x2715: ("uni2715", "multiply")}
