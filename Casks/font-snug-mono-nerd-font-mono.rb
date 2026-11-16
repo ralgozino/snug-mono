@@ -1,6 +1,6 @@
 cask "font-snug-mono-nerd-font-mono" do
-  version "2.001.20260930.e87273a"
-  sha256 "548240670276c1c89c982b941cdb270a1268d6a67c4ca4e8bc00bbc2fc667cb8"
+  version "2.001.20261116.aa45a27"
+  sha256 "5afb400af5dd696234112917866ba01de2db0f438cfac6f6ab20ac4370cf07ce"
 
   url "https://github.com/ralgozino/snug-mono/releases/download/v#{version}/SnugMono-NerdFontMono.zip"
   name "Snug Mono Nerd Font Mono"
